@@ -12,8 +12,7 @@ A modular, high-performance reinforcement learning experimentation platform feat
 
 ## 🎥 Demo
 
-![Project Demo](assets/public/demo.gif)
-*(Add `demo.gif` or `demo.mp4` to `assets/public/` to visualize the project here)*
+![Project Demo](assets/public/sample_video.mp4)
 
 ---
 
