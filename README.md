@@ -6,8 +6,6 @@
 
 A modular, high-performance reinforcement learning experimentation platform featuring Real-Time Visualization for the Lunar Lander environment. Built with **PyTorch**, **PyQt6**, and **Gymnasium**, optimized for CUDA acceleration.
 
-**Keywords:** Reinforcement Learning, RL, Lunar Lander, Rainbow DQN, Double DQN, PyTorch, CUDA, PyQt6, Real-time Visualization, Neural Network Visualization, Gymnasium, AI, Artificial Intelligence, Deep Learning.
-
 ---
 
 ## 🎥 Demo
@@ -21,14 +19,6 @@ A modular, high-performance reinforcement learning experimentation platform feat
          width="100%">
   </video>
 </div>
-
----
-
-## 🏷️ GitHub Topics (Manual Setup)
-
-Since GitHub topics cannot be set via git commands, please **manually add these topics** to the repository's "About" settings (top-right of repo page):
-
-`reinforcement-learning` `rainbow-dqn` `pytorch` `cuda-optimized` `real-time-visualization` `gymnasium` `lunar-lander` `deep-learning` `ai` `python` `pyqt6` `gpu-acceleration` `custom-metrics`
 
 ---
 
