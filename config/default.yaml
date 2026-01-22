@@ -1,0 +1,71 @@
+# Rainbow Lunar Lander - Default Configuration
+
+# Algorithm Selection
+algorithm: "double_dqn"  # Options: "double_dqn", "rainbow"
+
+# Environment Settings
+environment:
+  name: "LunarLander-v2"
+  max_episode_steps: 1000
+  render_mode: "rgb_array"
+
+# Common Training Hyperparameters
+training:
+  gamma: 0.99
+  learning_rate: 0.0001
+  batch_size: 64
+  buffer_size: 100000
+  target_update_freq: 1000
+  max_episodes: 2000
+  save_freq: 100  # Save checkpoint every N episodes
+
+# Network Architecture
+network:
+  hidden_layers: [64, 64]
+  activation: "relu"
+
+# Double DQN Specific
+double_dqn:
+  epsilon_start: 1.0
+  epsilon_end: 0.01
+  epsilon_decay: 0.995
+  tau: 0.005  # Soft update parameter
+
+# Rainbow DQN Specific
+rainbow:
+  n_atoms: 51
+  v_min: -200
+  v_max: 200
+  n_steps: 3
+  alpha: 0.6        # PER priority exponent
+  beta_start: 0.4   # IS weight annealing start
+  beta_frames: 100000
+  noisy_std: 0.5    # Noisy network std
+
+# GUI Settings
+gui:
+  render_fps: 30
+  graph_update_interval_ms: 100
+  max_instances: 4
+  theme: "dark"
+  default_speed: 1  # 1x speed
+
+# CUDA Settings
+cuda:
+  enabled: true
+  device: "cuda:0"
+  max_vram_gb: 3.5
+  mixed_precision: true
+  empty_cache_interval: 100  # Clear cache every N steps
+
+# Logging
+logging:
+  level: "INFO"
+  save_logs: true
+  log_dir: "logs"
+
+# Metrics
+metrics:
+  moving_average_windows: [10, 50, 100, 500]
+  save_metrics: true
+  metrics_dir: "metrics"

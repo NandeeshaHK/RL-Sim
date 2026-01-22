@@ -1,0 +1,369 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project": {
+    "name": "Rainbow Lunar Lander",
+    "description": "A modular reinforcement learning experimentation platform with real-time visualization for Lunar Lander environment",
+    "version": "0.1.0"
+  },
+  
+  "architecture": {
+    "type": "modular",
+    "pattern": "plugin-based",
+    "description": "Extensible architecture allowing easy addition of new RL algorithms",
+    "layers": [
+      {
+        "name": "GUI Layer",
+        "framework": "PyQt6",
+        "components": [
+          "MainWindow",
+          "EnvironmentPanel",
+          "NetworkVisualizer",
+          "MetricsPanel",
+          "ControlPanel"
+        ]
+      },
+      {
+        "name": "Core Engine",
+        "components": [
+          "TrainingManager",
+          "EnvironmentManager",
+          "AlgorithmManager",
+          "ConfigManager"
+        ]
+      },
+      {
+        "name": "Algorithms",
+        "base_class": "BaseAgent",
+        "implementations": ["DoubleDQN", "RainbowDQN"]
+      },
+      {
+        "name": "Utilities",
+        "components": [
+          "ReplayBuffer",
+          "PrioritizedReplayBuffer",
+          "CUDAManager",
+          "MetricsTracker"
+        ]
+      }
+    ]
+  },
+  
+  "algorithms": {
+    "double_dqn": {
+      "name": "Double Deep Q-Network",
+      "description": "DQN with separate target network to reduce overestimation bias",
+      "features": [
+        "Separate online and target networks",
+        "Epsilon-greedy exploration with decay",
+        "Soft target updates",
+        "Standard experience replay"
+      ],
+      "hyperparameters": {
+        "gamma": { "default": 0.99, "range": [0.9, 0.999] },
+        "learning_rate": { "default": 0.0001, "range": [0.00001, 0.01] },
+        "epsilon_start": { "default": 1.0, "range": [0.5, 1.0] },
+        "epsilon_end": { "default": 0.01, "range": [0.001, 0.1] },
+        "epsilon_decay": { "default": 0.995, "range": [0.99, 0.9999] },
+        "batch_size": { "default": 64, "options": [32, 64, 128, 256] },
+        "buffer_size": { "default": 100000, "range": [10000, 1000000] },
+        "target_update_freq": { "default": 1000, "range": [100, 10000] }
+      }
+    },
+    "rainbow_dqn": {
+      "name": "Rainbow DQN",
+      "description": "Combines 6 DQN improvements into a single agent",
+      "features": [
+        "Double Q-learning",
+        "Prioritized Experience Replay (PER)",
+        "Dueling Network Architecture",
+        "Noisy Networks for exploration",
+        "N-step returns",
+        "Distributional RL (C51)"
+      ],
+      "hyperparameters": {
+        "gamma": { "default": 0.99, "range": [0.9, 0.999] },
+        "learning_rate": { "default": 0.0001, "range": [0.00001, 0.01] },
+        "batch_size": { "default": 32, "options": [32, 64] },
+        "buffer_size": { "default": 100000, "range": [10000, 500000] },
+        "n_atoms": { "default": 51, "description": "Number of atoms for C51" },
+        "v_min": { "default": -200, "description": "Minimum value support" },
+        "v_max": { "default": 200, "description": "Maximum value support" },
+        "n_steps": { "default": 3, "options": [1, 3, 5] },
+        "alpha": { "default": 0.6, "range": [0.4, 0.8], "description": "PER exponent" },
+        "beta_start": { "default": 0.4, "range": [0.1, 0.5], "description": "IS weight annealing start" }
+      }
+    }
+  },
+  
+  "environment": {
+    "name": "LunarLander-v2",
+    "library": "gymnasium",
+    "state_space": {
+      "type": "continuous",
+      "dimensions": 8,
+      "features": [
+        { "name": "position_x", "range": [-1.5, 1.5] },
+        { "name": "position_y", "range": [-1.5, 1.5] },
+        { "name": "velocity_x", "range": [-5, 5] },
+        { "name": "velocity_y", "range": [-5, 5] },
+        { "name": "angle", "range": [-3.14, 3.14] },
+        { "name": "angular_velocity", "range": [-5, 5] },
+        { "name": "left_leg_contact", "range": [0, 1] },
+        { "name": "right_leg_contact", "range": [0, 1] }
+      ]
+    },
+    "action_space": {
+      "type": "discrete",
+      "dimensions": 4,
+      "actions": [
+        { "id": 0, "name": "No Engine" },
+        { "id": 1, "name": "Right Engine" },
+        { "id": 2, "name": "Down Engine" },
+        { "id": 3, "name": "Left Engine" }
+      ]
+    },
+    "multi_instance": {
+      "enabled": true,
+      "max_instances": 4,
+      "description": "Run multiple environment instances simultaneously"
+    }
+  },
+  
+  "gui": {
+    "framework": "PyQt6",
+    "theme": "dark",
+    "panels": {
+      "environment_panel": {
+        "description": "Real-time environment rendering",
+        "features": [
+          "Live game visualization",
+          "Episode reward slider",
+          "Episode/timestep counters",
+          "Epsilon value display",
+          "Multi-instance tabs"
+        ]
+      },
+      "network_panel": {
+        "description": "Interactive neural network visualization",
+        "features": [
+          "Input node labels (state features)",
+          "Hidden layer activations",
+          "Output Q-values with action highlighting",
+          "Connection weight visualization",
+          "Layer size annotations"
+        ]
+      },
+      "metrics_panel": {
+        "description": "Real-time training metrics graphs",
+        "graphs": [
+          {
+            "name": "Rewards",
+            "metrics": ["episode_reward", "average_reward"],
+            "x_axis": "episode",
+            "moving_averages": [10, 50, 100, 500]
+          },
+          {
+            "name": "Q-Values",
+            "metrics": ["average_q", "max_q"],
+            "x_axis": "episode",
+            "moving_averages": [10, 50, 100]
+          },
+          {
+            "name": "V-Values",
+            "metrics": ["average_v", "state_value"],
+            "x_axis": "timestep",
+            "moving_averages": [50, 100, 500]
+          },
+          {
+            "name": "Loss",
+            "metrics": ["td_loss", "priority_loss"],
+            "x_axis": "training_step",
+            "moving_averages": [100, 500]
+          }
+        ],
+        "features": [
+          "Custom moving average window configuration",
+          "Zoom and pan",
+          "Export to CSV/image",
+          "Real-time updates"
+        ]
+      },
+      "control_panel": {
+        "description": "Training control interface",
+        "controls": [
+          {
+            "name": "playback",
+            "buttons": ["play", "pause", "stop", "reset"],
+            "description": "Control training execution"
+          },
+          {
+            "name": "speed",
+            "options": ["1x", "2x", "5x", "10x", "Max"],
+            "description": "Training speed multiplier"
+          },
+          {
+            "name": "algorithm_selector",
+            "type": "dropdown",
+            "options": ["double_dqn", "rainbow_dqn"]
+          },
+          {
+            "name": "parameter_editor",
+            "type": "table",
+            "description": "Real-time hyperparameter adjustment"
+          },
+          {
+            "name": "checkpoint",
+            "buttons": ["save", "load"],
+            "description": "Model persistence"
+          }
+        ]
+      }
+    },
+    "layout": {
+      "type": "dockable",
+      "default_arrangement": [
+        { "panel": "environment_panel", "position": "top-left" },
+        { "panel": "network_panel", "position": "top-right" },
+        { "panel": "metrics_panel", "position": "bottom" },
+        { "panel": "control_panel", "position": "left-sidebar" }
+      ]
+    }
+  },
+  
+  "cuda_optimization": {
+    "enabled": true,
+    "target_vram_gb": 4,
+    "reserved_vram_gb": 0.5,
+    "strategies": [
+      {
+        "name": "batch_size_optimization",
+        "description": "Auto-tune batch size based on available VRAM",
+        "max_batch_size": 64
+      },
+      {
+        "name": "mixed_precision",
+        "enabled": true,
+        "description": "Use FP16 for forward/backward pass"
+      },
+      {
+        "name": "gradient_checkpointing",
+        "enabled": false,
+        "description": "Trade compute for memory on large networks"
+      },
+      {
+        "name": "memory_management",
+        "cache_clearing_interval": 100,
+        "garbage_collection": true
+      },
+      {
+        "name": "multi_instance_budget",
+        "max_concurrent": 4,
+        "memory_per_instance_mb": 500
+      }
+    ],
+    "recommended_settings": {
+      "double_dqn": {
+        "batch_size": 64,
+        "buffer_size": 100000,
+        "max_instances": 4
+      },
+      "rainbow_dqn": {
+        "batch_size": 32,
+        "buffer_size": 50000,
+        "max_instances": 2,
+        "note": "Rainbow uses more memory due to distributional RL"
+      }
+    }
+  },
+  
+  "dependencies": {
+    "python_version": ">=3.10",
+    "packages": {
+      "core": [
+        { "name": "torch", "version": ">=2.1.0", "extras": ["cuda"] },
+        { "name": "gymnasium", "version": ">=0.29.0", "extras": ["box2d"] },
+        { "name": "numpy", "version": ">=1.24.0" }
+      ],
+      "gui": [
+        { "name": "pyqt6", "version": ">=6.6.0" },
+        { "name": "pyqtgraph", "version": ">=0.13.3" }
+      ],
+      "config": [
+        { "name": "pyyaml", "version": ">=6.0" },
+        { "name": "python-dotenv", "version": ">=1.0.0" }
+      ],
+      "dev": [
+        { "name": "pytest", "version": ">=7.4.0" },
+        { "name": "black", "version": "*" },
+        { "name": "ruff", "version": "*" }
+      ]
+    }
+  },
+  
+  "file_structure": {
+    "root": "d:/GIT_Proj/rainbow_lunarlander",
+    "directories": [
+      {
+        "path": "src/algorithms",
+        "files": ["__init__.py", "base_agent.py", "double_dqn.py", "rainbow_dqn.py"],
+        "subdirs": ["networks"]
+      },
+      {
+        "path": "src/buffers",
+        "files": ["__init__.py", "base_buffer.py", "replay_buffer.py", "prioritized_buffer.py"]
+      },
+      {
+        "path": "src/environments",
+        "files": ["__init__.py", "lunar_lander.py", "multi_instance.py"]
+      },
+      {
+        "path": "src/gui",
+        "files": ["__init__.py", "main_window.py"],
+        "subdirs": ["panels", "widgets", "styles"]
+      },
+      {
+        "path": "src/core",
+        "files": ["__init__.py", "trainer.py", "metrics.py", "config.py"]
+      },
+      {
+        "path": "src/utils",
+        "files": ["__init__.py", "cuda_manager.py", "logging_utils.py", "visualization.py"]
+      },
+      {
+        "path": "config",
+        "files": ["default.yaml"]
+      },
+      {
+        "path": "tests",
+        "files": ["test_algorithms.py", "test_buffers.py", "test_gui.py"]
+      }
+    ]
+  },
+  
+  "metrics_tracking": {
+    "episode_metrics": [
+      "episode_reward",
+      "episode_length",
+      "epsilon",
+      "average_q_value",
+      "max_q_value",
+      "average_v_value"
+    ],
+    "training_metrics": [
+      "loss",
+      "td_error",
+      "gradient_norm",
+      "learning_rate"
+    ],
+    "system_metrics": [
+      "fps",
+      "vram_usage",
+      "training_steps_per_second"
+    ],
+    "moving_averages": {
+      "configurable": true,
+      "default_windows": [10, 50, 100, 500],
+      "custom_range": [1, 1000]
+    }
+  }
+}
