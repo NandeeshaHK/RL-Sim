@@ -12,7 +12,23 @@ A modular, high-performance reinforcement learning experimentation platform feat
 
 ## 🎥 Demo
 
-![Project Demo](assets/public/sample_video.mp4)
+<div align="center">
+  <video src="https://github.com/NandeeshaHK/RL-Sim/raw/refs/heads/main/assets/public/sample_video.mp4" 
+         autoplay 
+         loop 
+         muted 
+         playsinline 
+         width="100%">
+  </video>
+</div>
+
+---
+
+## 🏷️ GitHub Topics (Manual Setup)
+
+Since GitHub topics cannot be set via git commands, please **manually add these topics** to the repository's "About" settings (top-right of repo page):
+
+`reinforcement-learning` `rainbow-dqn` `pytorch` `cuda-optimized` `real-time-visualization` `gymnasium` `lunar-lander` `deep-learning` `ai` `python` `pyqt6` `gpu-acceleration` `custom-metrics`
 
 ---
 
